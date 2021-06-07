@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.test.board.mappers.mypageMapper">
+
+	
+
+	
+	<!-- 판매자  -->
+	<select id="selectVendor" parameterType="Integer" resultType="VendorVO">
+		select "UID","PROFILE_PIC", "INFO_VENDOR", "AREA" from VENDOR where "UID"= #{uid}
+	</select>
+	
+	
+	
+	<!-- 판매자 정보 수정 --> 
+	<update id="updateVendor" parameterType="VendorVO">
+		update VENDOR set "PROFILE_PIC"=#{profile_pic}, "INFO_VENDOR"=#{info_vendor}, "AREA"=#{area}
+		  where "UID"=#{uid}
+	</update>
+	 
+	 
+	 <!--  이메일로 uid 받아오기  -->
+	<select id="selectUID" parameterType="String" resultType="int">
+		select "UID" from MEMBER where "EMAIL"= #{email}
+	</select>
+	
+	
+	<!--  uid로 contents 가져오기  -->
+	<select id="selectContents" parameterType="Integer" resultType="ContentVO">
+		select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+   		"TITLE", "CONTENT", "VIDEO", "CTHUMBNAIL", "VTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+		from "CONTENTS" where "UID" = #{uid}
+	</select>
+	
+	
+	
+<!--    관리자     -->
+	<!--  이메일로 비번 받아오기 -->
+	<select id="vendorSelect" parameterType="string" resultType="MemberVO">
+		<![CDATA[select * from MEMBER where "EMAIL" = #{email} and "VERIFICATION"=3 ]]>
+	</select>  
+	
+
+	
+	
+	 
+
+<!--  구매자 페이지 -->
+	
+	<!-- 글 리스트 -->
+	<select id="orderList" resultType="OrderVO">
+		select * from ORDER2 where "UID" = #{uid} AND "STATE" = 1
+	</select>
+	
+	<select id="cancleList" resultType="OrderVO">
+		select * from "ORDER2" where "UID" = #{uid} and "STATE" = 2
+	</select>
+	
+	<select id="orderAll" resultType="OrderVO" parameterType="Integer">
+		select * from ORDER2 where "CID"=#{cid}
+	</select>
+	
+<!--  나의 후기 몰아보기  -->
+	<select id="replyList" resultType="ReplyList" parameterType="Integer">
+		<![CDATA[ SELECT C."TITLE", R."REPCONTENT", R."REPDATE", R."RID"
+					FROM REPLY R , CONTENTS C 
+					WHERE R."UID"=#{uid} AND C."CID"=R."CID" ]]>
+
+	</select>
+	
+	
+	<update id="replyUpdate">
+     	update "REPLY" set "REPCONTENT" = #{repcontent}, "REPDATE" = sysdate where "RID" = #{rid}
+   </update>
+   
+   <delete id="replyDelete" parameterType="String"> 
+      	delete from "REPLY" where "RID" = #{rid}
+   </delete>
+		
+	<update id="updateMember" parameterType="MemberVO">
+		update MEMBER set "PASSWORD"=${password}, "PHONE"=${phone} where "UID"=${uid}
+	</update>
+		
+</mapper>

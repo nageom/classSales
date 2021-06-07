@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 마이바티스 작동 규칙 정의 -->
+	<settings>
+		<setting name="cacheEnabled" value="false"/>				<!-- Mybatis cache 사용 여부 -->
+		<setting name="useGeneratedKeys" value="false"/>			<!-- 생성 키에 대한 JDBC 지원 허용 여부 -->
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="com.test.board.domain.ContentVO" alias="ContentVO" />
+		<typeAlias type="com.test.board.domain.ReplyVO" alias="ReplyVO" />
+		<typeAlias type="com.test.board.domain.ReplyList" alias="ReplyList" />
+		<typeAlias type="com.test.board.domain.RepCheck" alias="RepCheck" />
+		<typeAlias type="com.test.board.domain.PageRow" alias="PageRow" />
+		
+		
+		<typeAlias type="com.test.board.domain.MessageVO" alias="MessageVO" />
+		<typeAlias type="com.test.board.domain.MemberVO" alias="MemberVO" />
+		<typeAlias type="com.test.board.domain.VendorVO" alias="VendorVO"/>
+		<typeAlias type="com.test.board.domain.ResDTO" alias="ResDTO"/>
+		<typeAlias type="com.test.board.domain.OrderVO" alias="OrderVO" />
+		<typeAlias type="com.test.board.domain.ResDays" alias="ResDays" />
+		
+		
+
+	</typeAliases>
+	
+</configuration>

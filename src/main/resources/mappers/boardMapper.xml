@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.test.board.mappers.boardMapper">
+
+	
+	
+
+	
+	
+
+	<!-- 날짜 불러오깅 -->
+	<!-- 
+	<select id="getDays" parameterType="int" resultType="HashMap">
+		select RESDAY from RESDAYS where CID = #{cid} 
+	</select>
+	 -->
+	
+	<select id="getDays" parameterType="int" resultType="ResDays">
+		select "RESDAY", "PERSON" from RESDAYS where "CID" = #{cid}
+	</select>
+	
+	<!-- 주문 테이블 -->
+	
+	<insert id="insertOrder" parameterType="OrderVO">
+		insert into ORDER2 ("OID", "UID", "CID", "AMOUNT", "QUANTITY" , "RESDAY", "TITLE", "DELIVER") 
+		values (#{oid}, #{uid}, #{cid}, #{amount}, #{quantity}, #{resday}, #{title}, #{deliver})
+	</insert>
+	
+	<!--  contents 테이블 -->
+	<select id="selectContent" parameterType="int" resultType="ContentVO">
+		select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+   		"TITLE", "CONTENT", "VIDEO", "CTHUMBNAIL", "VTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+		from "CONTENTS" where "CID" = #{cid}
+	</select>
+	
+	
+	
+	<!--  로그인시 이메일로 member객체 불러오기  -->
+	<select id="selectMember" parameterType="String" resultType="MemberVO">
+		select "UID", "NAME", "PASSWORD", "EMAIL", "PHONE", "VERIFICATION", "NICKNAME", "REGDATE"
+		from MEMBER WHERE "EMAIL" = #{email}
+	</select>
+	
+	<!--  예약 완료 후 예약날짜에 인원 바꿔주기 -->
+	<update id="updateRes" parameterType="ResDTO">
+		update RESDAYS set "PERSON"= person - #{quantity} where "RESDAY"= #{resday}
+	</update>
+	
+	<!--  환불시 oid로 환불금액 받아오기 -->
+	<select id="selectAmount" parameterType="String" resultType="Integer">
+		select "AMOUNT" from ORDER2 where "OID"=#{oid}
+	</select>
+	
+	<!-- 환불 성공시 order의 state를 2로 바꿔줌 -->
+	<update id="updateState" parameterType="String">
+		update ORDER2 set "STATE"=2 where "OID"=#{oid}
+	</update>
+	
+	<!-- 이미지 처리 -->
+	<select id="imgList" parameterType="Integer" resultType="String">
+		select "VTHUMBNAIL" from "CONTENTS" where "CID" = #{cid}
+	</select>
+	
+	
+
+	
+	
+	
+	
+		
+	
+		
+		
+		
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.test.board.mappers.contentMapper">
+
+	<!-- 게시판 쿼리 -->
+
+	<!-- 글 리스트 -->
+	<select id="mainList" resultType="ContentVO">
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from "CONTENTS" where "CID" > 0 order by "CONDATE" desc ]]>
+	</select>
+	
+	<select id="onoffList" resultType="ContentVO">
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from contents where on_off = #{on_off} order by "CONDATE" desc ]]>
+	</select>
+
+	<select id="bigcateList" resultType="ContentVO">
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from contents where big_name = #{big_name} and on_off = #{on_off} ]]>
+	</select>
+
+	<select id="smallcateList" resultType="ContentVO">
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from contents where small_name = #{small_name} and on_off = #{on_off} ]]>
+	</select>
+	
+	<select id="newList" resultType="ContentVO"> 
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from (select * from "CONTENTS" order by "CONDATE" desc) where rownum <= 5 and on_off = #{on_off} ]]>
+	</select>
+	
+	<select id="hotList" resultType="ContentVO"> 
+	
+	</select>
+	
+	
+	
+	<select id="areaList" resultType="ContentVO"> 
+	<![CDATA[ select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+				from contents where area = #{area} and on_off = #{on_off} ]]>
+	</select>
+
+
+
+
+	
+	<!-- 글 등록 -->
+	<!-- 글 등록 -->
+	<insert id="upContent"> 
+		insert into "CONTENTS" ("CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+					"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE")
+		values(CID_SEQ.nextval, #{big_name}, #{small_name}, #{uid}, #{on_off}, #{att_num}, #{price}, #{area}, 
+				#{title}, #{content}, #{video}, #{vthumbnail}, #{cthumbnail}, 11, 11, sysdate)
+	</insert>
+	
+	<insert id="classInsert"> 
+		insert into "CONTENTS" ("CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+					"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE")
+		values(CID_SEQ.nextval, #{big_name}, #{small_name}, #{uid}, #{on_off}, #{att_num}, #{price}, #{area}, 
+				#{title}, #{content}, #{video}, #{vthumbnail}, #{cthumbnail}, #{pic_content}, #{file_name}, sysdate)
+	</insert>
+	
+	
+	
+	<!-- 글 읽기 -->
+	<select id="select" resultMap="ContentResultMap"> 
+		select "CID", "BIG_NAME", "SMALL_NAME", "UID", "ON_OFF", "ATT_NUM", "PRICE", "AREA",
+				"TITLE", "CONTENT", "VIDEO", "VTHUMBNAIL", "CTHUMBNAIL", "PIC_CONTENT", "FILE_NAME", "CONDATE"
+		from "CONTENTS" where "CID" = #{cid}
+	</select>
+	
+	<!-- 글 수정 -->
+	<update id="update">
+		update "CONTENTS" set "BIG_NAME" = #{big_name}, "SMALL_NAME" = #{small_name}, "UID" = #{uid}, "ON_OFF" = #{on_off}, "ATT_NUM" = #{att_num}, "PRICE" = #{price}, "AREA" = #{area},
+					"TITLE" = #{title}, "CONTENT" = #{content}, "VIDEO" = #{video}, "VTHUMBNAIL" = #{vthumbnail}, "CTHUMBNAIL" = #{cthumbnail}, "PIC_CONTENT" = #{pic_content}, "FILE_NAME" = #{file_name}, "CONDATE" = sysdate
+		where CID = #{cid}
+	</update>
+	
+	
+	<!-- 글 삭제 -->
+	<delete id="deleteCon" parameterType="Integer"> 
+		delete from "CONTENTS" where "CID" = #{cid}
+	</delete>
+	
+	<select id="manageList" resultType="contentVO">
+	SELECT B."BIG_NAME", B."SMALL_NAME", B."ON_OFF", A."NICKNAME", B."ATT_NUM", B."PRICE", B."CONDATE", B."TITLE", B."CID"
+               FROM MEMBER A , CONTENTS B WHERE A."UID"= B."UID"
+	</select>
+	
+	<select id="manageListByVendor" parameterType="String" resultType="contentVO">
+	SELECT B."BIG_NAME", B."SMALL_NAME", B."ON_OFF", A."NICKNAME", B."ATT_NUM", B."PRICE", B."CONDATE", B."TITLE", B."CID"
+               FROM MEMBER A , CONTENTS B WHERE A."UID"= B."UID" AND "NICKNAME" LIKE '%'||#{search}||'%'
+	</select>
+	<!-- 댓글 쿼리 -->
+	
+	<!-- 비동기 페이징 댓글 리스트 -->
+	<select id="repList" resultType="ReplyList" parameterType="PageRow"> 
+		<![CDATA[select * from (select rownum rnum, "UID", "REPCONTENT", "REPDATE", "NICKNAME", "RID" from 
+				(select * from (
+  					SELECT B."UID", B."REPCONTENT", B."REPDATE", A."NICKNAME", B."RID"
+					FROM MEMBER A , REPLY B 
+					WHERE A."UID"= B."UID" AND B."CID"=#{cid})      
+   				order by "REPDATE" desc ) ) where rnum>=#{startRow} and rnum<=#{endRow}]]>
+	</select>
+	
+	<!-- 댓글 입력 -->
+	<insert id="repInsert" parameterType="ReplyVO"> 
+		insert into "REPLY" ("RID", "UID", "CID", "REPCONTENT") 
+		values( REPLY_SEQ.nextval, #{uid}, #{cid}, #{repcontent})
+	</insert>
+	
+	<!-- 댓글 수정 -->
+	<update id="repUpdate"> 
+		update "REPLY" set "REPCONTENT" = #{repcontent}, "REPDATE" = sysdate where "RID" = #{rid}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="repDelete"> 
+		delete from REPLY where "RID" = #{rid}
+	</delete>
+	
+	
+	<select id="repCount" resultType="int">
+		<![CDATA[select count(*) from REPLY where "CID"=#{cid}]]>  
+	</select>
+	
+	<!-- 주문한 상품에만 후기를 남길 수 있도록 확인  -->
+	<select id="repCheck" resultType="int" parameterType="RepCheck">
+		<![CDATA[select count(*) from ORDER2 where "CID"=#{cid} and "UID"=#{uid} ]]>  
+	</select>
+
+	
+
+
+	<resultMap id="ReplyResultMap" type="ReplyVO">
+		<id property="rid" column="rid" />
+		<id property="uid" column="uid" />
+		<id property="cid" column="cid" />
+		<result property="repcontent" column="repcontent" />
+		<result property="repdate" column="repdate" />
+	</resultMap>
+		
+	<resultMap id="ContentResultMap" type="ContentVO">
+		<id property="cid" column="cid" />
+		<id property="big_name" column="big_name" />
+		<id property="small_name" column="small_name" />
+		<id property="uid" column="uid" />
+		<result property="on_off" column="on_off" />
+		<result property="att_num" column="att_num" />
+		<result property="content" column="content" />
+		<result property="thumbnail" column="thumbnail" />
+		<result property="pic_content" column="pic_content" />
+		<result property="title" column="title" />
+		<result property="video" column="video" />
+		<result property="file_name" column="file_name" />
+		<result property="price" column="price" />
+		<result property="condate" column="condate" />
+	</resultMap>
+</mapper>
+
