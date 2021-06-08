@@ -211,14 +211,14 @@ public class VendorController {
 
 	}
 
-	//내클래스 예약 현황
+	//내클래스 예약 현황s
 	@RequestMapping(value="/seller/myOrder",  method=RequestMethod.GET)
 	public String myOrder(Model model, HttpSession session) {
 		MemberVO id = (MemberVO) session.getAttribute("sessionId");
 		
 		List<ContentVO> list =mypageService.selectContents(id.getUid());
 		System.out.println("myOrder의 list :"+ list);
-		for (ContentVO contentVO : list) {
+		for (ContentVO contentVO : list) {  
 			System.out.println("LIST 확인 :"+ contentVO.getTitle());
 
 		}
