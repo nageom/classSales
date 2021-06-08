@@ -25,7 +25,7 @@
 
 <body>
 
-<div style="border:1px solid #444444;margin-left:500px ; margin-right:500px ;">
+<div style="border:1px solid #444444;margin-left:200px ; margin-right:200px ;">
 
 	<div style="float: right;">
 

@@ -191,11 +191,14 @@ public class VendorController {
 
 	//////////판매자 마이페이지 요청
 
-	@RequestMapping(value="/seller/myClass/{uid}", method=RequestMethod.GET)
-	public String myClass(@PathVariable int uid, Model model) {
+	@RequestMapping(value="/seller/myClass", method=RequestMethod.GET)
+	public String myClass( Model model, HttpSession session) {
 
+		MemberVO id = (MemberVO) session.getAttribute("sessionId");
+		
 		System.out.println("myClass 시작");
-		List<ContentVO> list =mypageService.selectContents(uid);
+		List<ContentVO> list =mypageService.selectContents(id.getUid());
+		
 		System.out.println("myClass 의 list :"+ list);
 		for (ContentVO contentVO : list) {
 			System.out.println("LIST 확인 :"+ contentVO.getTitle());
@@ -208,10 +211,12 @@ public class VendorController {
 
 	}
 
-
-	@RequestMapping(value="/seller/myOrder/{uid}",  method=RequestMethod.GET)
-	public String myOrder(@PathVariable int uid, Model model) {
-		List<ContentVO> list =mypageService.selectContents(uid);
+	//내클래스 예약 현황
+	@RequestMapping(value="/seller/myOrder",  method=RequestMethod.GET)
+	public String myOrder(Model model, HttpSession session) {
+		MemberVO id = (MemberVO) session.getAttribute("sessionId");
+		
+		List<ContentVO> list =mypageService.selectContents(id.getUid());
 		System.out.println("myOrder의 list :"+ list);
 		for (ContentVO contentVO : list) {
 			System.out.println("LIST 확인 :"+ contentVO.getTitle());
@@ -223,6 +228,11 @@ public class VendorController {
 		return "seller/myOrder";
 	}
 
+	//환불 현황 메서드 사라짐
+	
+	
+	
+	
 	//클래스별 예약현황 리스트
 	@RequestMapping(value="/seller/resState/{cid}",  method=RequestMethod.GET)
 	public String resState(@PathVariable int cid, Model model) {
@@ -255,10 +265,11 @@ public class VendorController {
 
 
 	//판매자 수정
-	@RequestMapping(value="/seller/changeComment/{uid}", method=RequestMethod.GET)
-	public String vendorHome(@PathVariable int uid, Model model) {	
+	@RequestMapping(value="/seller/changeComment", method=RequestMethod.GET)
+	public String vendorHome( Model model, HttpSession session) {	
 		try {
-			VendorVO vendorVO = mypageService.selectVendor(uid);
+			MemberVO id = (MemberVO) session.getAttribute("sessionId");
+			VendorVO vendorVO = mypageService.selectVendor(id.getUid());
 			System.out.println("vendorVO : "+ vendorVO);
 			model.addAttribute("vendorVO", vendorVO);
 
@@ -285,7 +296,7 @@ public class VendorController {
 
 	@RequestMapping(value="/seller/request")
 	public String registerRequest() {
-		return "vendor/request";
+		return "seller/request";
 	}
 
 

@@ -10,13 +10,10 @@
 
 </head>
 <body>
-	
-
 
 	<%@ include file="/WEB-INF/views/mypage/test.jsp" %>
 
-	
-	
+
 	<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 	<h2>환영합니다 마이페이지</h2>
 		</main>
