@@ -227,8 +227,15 @@ public class VendorController {
 
 		return "seller/myOrder";
 	}
-
+////////////////////////////////////////////////////////////////////
 	//환불 현황 메서드 사라짐
+	@RequestMapping(value="/seller/cancleList")
+	public String cancleList(@PathVariable int on_off, Model model) {
+		
+		model.addAttribute("on_off", on_off);
+		
+		return "seller/cancleList";
+	}
 	
 	
 	
