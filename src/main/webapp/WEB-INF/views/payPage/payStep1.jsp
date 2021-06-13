@@ -103,8 +103,6 @@ var msg;
 
 //step3 - 결제창 호출코드 추가하기 
 //IMP.request_pay(param, callback)을 호출합니다. 함수의 첫번째 인자인 param에 결제 요청에 필요한 속성과 값을 담습니다. 
-
-
 function requestPay() {
     IMP.request_pay({
         pg : 'html5_inicis',

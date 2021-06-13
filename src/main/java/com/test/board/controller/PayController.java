@@ -72,6 +72,64 @@ public class PayController {
 	}
 	
 	
+	//첫 결제 클릭시 
+		@RequestMapping(value="/payStep1", method=RequestMethod.POST )
+		public String payStep1(@ModelAttribute OrderVO OrderVO, Model model, HttpSession session) {
+			//1. session 안 객체 Member.uid 얻어오기 .
+			MemberVO sessionId = (MemberVO) session.getAttribute("sessionId");
+			//2. 주문테이블에 추가시켜줌																										// 결제 전 = 0
+			// 현재 ->  OrderVO: OrderVO [oid=null, uid= {mem.getUid()}, cid=6, amount=2200, quantity=1, paydate=null, resday=2021-06-05, state=0, title=가죽지갑]
+			OrderVO.setUid(sessionId.getUid()); 
+			
+			//cid로 content가져오기. 
+			ContentVO content = contentService.select(OrderVO.getCid());
+			
+			System.out.println("OrderVO: "+OrderVO.toString());
+			System.out.println("contentVO: "+ content.toString());
+			
+			model.addAttribute("OrderVO",OrderVO);
+			model.addAttribute("contentVO", content);
+			return "payPage/payStep1";
+		}
+
+		
+		//Ajax
+		//결제완료시 order 
+		@RequestMapping(value="/payComplete")
+		@ResponseBody
+		public void complete( @RequestBody OrderVO OrderVO/* @RequestBody String jjson*/ ) {
+			// json 형태로 데이터 받아
+			
+			// 주분번호 oid(imp_uid) 
+			// 사용자 uid 
+			// 상품 cid
+			// 결제금액 amount
+			// 예약 인원 quantity..등
+			System.out.println(OrderVO.toString());
+			try {
+				boardService.insertOrder(OrderVO);
+				String[] date = OrderVO.getResday().split("-");
+				String checkDate =null;
+				checkDate=date[0]+"/"+date[1]+"/"+date[2];
+				System.out.println("checkDate :"+ checkDate.toString());
+				ResDTO resDTO = new ResDTO(OrderVO.getQuantity(), checkDate, OrderVO.getCid());
+				System.out.println("resDTO: "+ resDTO.toString());
+				
+				//예약 날짜에다가 예약인원수 바꿔주기 
+				boardService.updateRes(resDTO);
+				
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				//주문 order테이블 insert 실패
+				System.out.println("주문 order테이블 insert or update 실패");
+			}
+			
+			
+			
+		}
+		
+	
 	//REST API로 결제환불 요청
 	public int getCancel (String access_token, String oid) throws IOException {
 			System.out.println("환불요청 시작 ");
@@ -157,8 +215,11 @@ public class PayController {
 	@RequestMapping(value="/cancelResult")
 	public String payCancelPro(Model model,String oid) throws IOException, ParseException {
 	
+		// 0) 우선 환불시 필요한 주문번호(고유값) 확인
 		System.out.println("oid :" + oid);
-		//1) 엑세스 토큰을 받을 변수와 엑세스 코큰을 받아올 요청 주소 입력
+		
+		
+		//1) 엑세스 토큰을 받을 변수와 엑세스 토큰을 받아올 요청 주소 입력
 		HttpURLConnection conn = null;
 		String access_token = null;
 		URL url = new URL("https://api.iamport.kr/users/getToken");//엑세스 토큰을 받아올 주소
@@ -166,7 +227,7 @@ public class PayController {
 		
 		conn = (HttpURLConnection) url.openConnection();
 		
-		//요청방식 : POST, Header, Data 옵션 설정
+		// 요청방식 : POST, Header, Data 옵션 설정
 		conn.setRequestMethod("POST");
 		
 		// Header 설정 (application/json 형식으로 데이터를 전송 )
@@ -176,6 +237,8 @@ public class PayController {
 		
 		//Data 설정
 		conn.setDoOutput(true);//OutputStream으로 POST 데이터를 넘겨주겠다는 옵션
+		
+		
 		
 		//3) imp_key와 imp_secret키를 JSON 형태로 넣은 후 아임 포트 서버로 Request(요청) 을 할것
 		JSONObject obj = new JSONObject();
@@ -187,6 +250,9 @@ public class PayController {
 		bw.flush();
 		bw.close();
 		
+		
+		
+		
 		//4) 아임 포트 서버로 요청한 응답을 JSON 형태로 받게 되면 JSONParser 라이브러리를 사용해 액세스 토큰을 뽑아줌.
 		// 서버로부터 응답 데이터 받기 
 		int result=0;
@@ -194,8 +260,9 @@ public class PayController {
 		
 		System.out.println("응답 코드 : "+ responseCode);
 		
+		
 		if (responseCode==200) {
-			System.out.println("토큰 요청만 성공");
+			System.out.println("일단 토큰 요청까지 성공");
 			//System.out.println(conn.getInputStream());
 			//System.out.println("conn.getInputStream().toString =   "+(conn.getInputStream()).toString() );
 			
@@ -211,7 +278,8 @@ public class PayController {
 			while ((line = br.readLine()) !=null) {
 				sb.append(line+"\n");
 				//System.out.println("line:"+ line+"\n");
-				System.out.println("토큰요청에 대한 응답"+sb.toString()); 
+				System.out.println("line: "+ line );
+				System.out.println("sb.toString()"+sb.toString()); 
 			}
 			
 			
@@ -219,7 +287,6 @@ public class PayController {
 			JSONParser jsonParse = new JSONParser(); //JSONParse에 json데이터를 넣어 파싱한 다음 JSONObject로 변환한다.
 			
 			responseJson = (JSONObject) jsonParse.parse(sb.toString()); //JSONObject에서 PersonsArray를 get하여 JSONArray에 저장한다.
-			JSONArray jasonArray = (JSONArray)responseJson.get("Persons");
 			
 			System.out.println("이게뭐지?"+responseJson.get("code").getClass());
 			System.out.println("json형태 응답 : "+ responseJson);
@@ -294,69 +361,6 @@ public class PayController {
 	}
 	
 	
-	//첫 결제 클릭시 
-	@RequestMapping(value="/payStep1", method=RequestMethod.POST )
-	public String payStep1(@ModelAttribute OrderVO OrderVO, Model model, HttpSession session) {
-		//1. session 안 객체 Member.uid 얻어오기 .
-		MemberVO sessionId = (MemberVO) session.getAttribute("sessionId");
-		//2. 주문테이블에 추가시켜줌																										// 결제 전 = 0
-		// 현재 ->  OrderVO: OrderVO [oid=null, uid= {mem.getUid()}, cid=6, amount=2200, quantity=1, paydate=null, resday=2021-06-05, state=0, title=가죽지갑]
-		OrderVO.setUid(sessionId.getUid()); 
-
-		//cid로 content가져오기. 
-		ContentVO content = contentService.select(OrderVO.getCid());
-		
-		System.out.println("OrderVO: "+OrderVO.toString());
-		System.out.println("contentVO: "+ content.toString());
-	
-		model.addAttribute("OrderVO",OrderVO);
-		model.addAttribute("contentVO", content);
-		return "payPage/payStep1";
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//결제완료. 
-	@RequestMapping(value="/payComplete")
-	@ResponseBody
-	public void complete( @RequestBody OrderVO OrderVO/* @RequestBody String jjson*/ ) {
-		// json 형태로 데이터 받아
-
-		// 주분번호 oid(imp_uid) 
-		// 사용자 uid 
-		// 상품 cid
-		// 결제금액 amount
-		// 예약 인원 quantity..등
-		System.out.println(OrderVO.toString());
-		try {
-			boardService.insertOrder(OrderVO);
-			String[] date = OrderVO.getResday().split("-");
-			String checkDate =null;
-			checkDate=date[0]+"/"+date[1]+"/"+date[2];
-			System.out.println("checkDate :"+ checkDate.toString());
-			ResDTO resDTO = new ResDTO(OrderVO.getQuantity(), checkDate, OrderVO.getCid());
-			System.out.println("resDTO: "+ resDTO.toString());
-			
-			//예약 날짜에다가 예약인원수 바꿔주기 
-			boardService.updateRes(resDTO);
-			
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-			//주문 order테이블 insert 실패
-			System.out.println("주문 order테이블 insert or update 실패");
-		}
-		
-		
-		
-	}
 	
 	
 	
